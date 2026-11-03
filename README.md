@@ -35,3 +35,14 @@ Para jugar:
 ```sh
 python shooter.py
 ```
+
+## Crear un ejecutable (.exe) para Windows
+
+Con [PyInstaller](https://pyinstaller.org/) puedes generar un único `.exe` que incluye Python, pygame y todos los recursos. Así se puede jugar en otro PC sin instalar nada:
+
+```sh
+pip install pyinstaller
+pyinstaller --onefile --windowed --name MeteoroShooter --add-data "assets;assets" shooter.py
+```
+
+El ejecutable queda en `dist/MeteoroShooter.exe`. El récord se guarda en un archivo `highscore.txt` junto al `.exe`.

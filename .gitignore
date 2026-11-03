@@ -1,2 +1,5 @@
 highscore.txt
 __pycache__/
+build/
+dist/
+*.spec

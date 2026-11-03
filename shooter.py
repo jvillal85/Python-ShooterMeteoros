@@ -10,9 +10,16 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 
-# Rutas relativas al archivo, para que el juego funcione desde cualquier carpeta
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+# Rutas relativas al archivo, para que el juego funcione desde cualquier carpeta.
+# Empaquetado como .exe (PyInstaller), los recursos están en sys._MEIPASS y el
+# récord se guarda junto al ejecutable.
+if getattr(sys, "frozen", False):
+    BASE_DIR = os.path.dirname(sys.executable)
+    RESOURCES_DIR = getattr(sys, "_MEIPASS", BASE_DIR)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    RESOURCES_DIR = BASE_DIR
+ASSETS_DIR = os.path.join(RESOURCES_DIR, "assets")
 
 
 def asset(name):
