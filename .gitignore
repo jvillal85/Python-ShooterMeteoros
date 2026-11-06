@@ -1,5 +1,11 @@
+# Datos del jugador (se crean al jugar)
 highscore.txt
+highscores.json
+settings.json
+
+# Python y PyInstaller
 __pycache__/
 build/
 dist/
 *.spec
+.venv/

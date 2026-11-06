@@ -1,0 +1,38 @@
+name: Publicar .exe
+
+# Se ejecuta al subir una etiqueta de versión (por ejemplo: git tag v1.1 && git push origin v1.1)
+# o a mano desde la pestaña "Actions" de GitHub.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+      - name: Pruebas
+        run: python -m unittest discover -s tests -v
+      - name: Crear MeteoroShooter.exe
+        run: pyinstaller --onefile --windowed --name MeteoroShooter --add-data "assets;assets" shooter.py
+      - name: Guardar el .exe como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeteoroShooter-windows
+          path: dist/MeteoroShooter.exe
+      - name: Adjuntar el .exe a la versión (release)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/MeteoroShooter.exe
