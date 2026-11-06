@@ -1,0 +1,21 @@
+[project]
+name = "meteoro-shooter"
+version = "1.1.0"
+description = "Juego arcade de naves hecho con pygame-ce"
+requires-python = ">=3.9"
+dependencies = ["pygame-ce>=2.5"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+extend-exclude = ["build", "dist"]
+
+[tool.ruff.lint]
+# E/W: estilo · F: errores (variables sin usar, imports...) · B: errores comunes · I: orden de imports
+select = ["E", "W", "F", "B", "I"]
+
+[tool.mypy]
+# Se revisan los tipos de la lógica pura (sin pygame)
+files = ["meteoro/rules.py", "meteoro/storage.py", "meteoro/i18n.py", "meteoro/config.py"]
+python_version = "3.10"
+strict = true
