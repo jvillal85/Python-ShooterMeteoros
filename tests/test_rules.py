@@ -36,6 +36,22 @@ class LevelTests(unittest.TestCase):
         self.assertEqual(rules.meteor_speed_range(50), rules.meteor_speed_range(100))
 
 
+class DifficultyTests(unittest.TestCase):
+    def test_harder_means_faster_more_and_stronger(self):
+        self.assertLess(rules.meteor_speed_range(1, "easy")[1], rules.meteor_speed_range(1, "hard")[1])
+        self.assertLess(rules.meteors_for_level(1, "easy"), rules.meteors_for_level(1, "hard"))
+        self.assertLess(rules.scaled_damage(30, "easy"), rules.scaled_damage(30, "hard"))
+        self.assertGreater(rules.enemy_fire_interval(2, "easy"), rules.enemy_fire_interval(2, "hard"))
+
+    def test_unknown_difficulty_is_normal(self):
+        self.assertEqual(rules.scaled_damage(30, "???"), 30)
+
+    def test_level_progress(self):
+        self.assertEqual(rules.level_progress(0), 0)
+        start, end = rules.score_for_level(3), rules.score_for_level(4)
+        self.assertAlmostEqual(rules.level_progress((start + end) // 2), 0.5, places=2)
+
+
 class MeteorTests(unittest.TestCase):
     def test_smaller_meteors_give_more_points(self):
         points = [rules.meteor_points(s) for s in C.METEOR_SIZES]
@@ -77,9 +93,19 @@ class EnemyTests(unittest.TestCase):
         self.assertEqual(rules.boss_hp(C.BOSS_EVERY), C.BOSS_BASE_HP)
         self.assertGreater(rules.boss_hp(C.BOSS_EVERY * 2), rules.boss_hp(C.BOSS_EVERY))
 
+    def test_boss_gets_new_attacks(self):
+        self.assertEqual(rules.boss_attacks(5), ["fan", "aimed"])
+        self.assertIn("spiral", rules.boss_attacks(10))
+        self.assertIn("summon", rules.boss_attacks(15))
+
+    def test_enemy_types_unlock_by_level(self):
+        self.assertEqual(rules.enemy_types_for_level(2), [])
+        self.assertEqual(rules.enemy_types_for_level(3), ["shooter"])
+        self.assertEqual(set(rules.enemy_types_for_level(10)), set(C.ENEMY_TYPES))
+
     def test_enemies_only_from_first_level(self):
-        self.assertEqual(rules.max_enemies(C.ENEMY_FIRST_LEVEL - 1), 0)
-        self.assertEqual(rules.max_enemies(C.ENEMY_FIRST_LEVEL), 1)
+        self.assertEqual(rules.max_enemies(C.ENEMY_TYPES["shooter"]["level"] - 1), 0)
+        self.assertEqual(rules.max_enemies(C.ENEMY_TYPES["shooter"]["level"]), 1)
         self.assertEqual(rules.max_enemies(100), 3)
 
 
